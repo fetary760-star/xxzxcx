@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <title>Ethiopian Airlines - CMT Task Management</title>
+  <meta name="description" content="Ethiopian Airlines Component Maintenance Tracking Task Management System" />
+  <meta name="author" content="Ethiopian Airlines" />
+
+  <meta property="og:title" content="Ethiopian Airlines - CMT Task Management" />
+  <meta property="og:description" content="Component Maintenance Tracking Task Management System" />
+  <meta property="og:type" content="website" />
+
+  <!-- SECURITY: Frame-Busting Script (Defense-in-Depth) -->
+  <!-- This is a backup protection in case HTTP headers fail or are stripped -->
+  <script>
+    // Frame-busting protection - prevents clickjacking attacks
+    // Primary protection is via X-Frame-Options and CSP headers
+    // This script provides secondary defense-in-depth protection
+    (function() {
+      // Check if page is being framed
+      if (top !== self) {
+        // Page is in a frame - break out immediately
+        top.location = self.location;
+      }
+      
+      // Additional protection: Hide content if framed (fallback)
+      // This handles cases where frame-busting might be blocked
+      if (top !== self) {
+        document.documentElement.style.display = 'none';
+      }
+    })();
+  </script>
+  <noscript>
+    <!-- Fallback for users with JavaScript disabled -->
+    <meta http-equiv="refresh" content="0; url=about:blank">
+    <style>
+      /* Hide all content if JavaScript is disabled and page is framed */
+      body { display: none !important; }
+    </style>
+  </noscript>
+
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

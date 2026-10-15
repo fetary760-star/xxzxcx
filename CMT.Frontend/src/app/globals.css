@@ -1,0 +1,825 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import table improvements CSS */
+@import '../styles/table-improvements.css';
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 150 100% 24%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+
+    --primary-hex: #007A3D;
+    --background-hex: #f5f9ff;
+    --dark-hex: #212529;
+
+    --metric-green-start: #34d399; /* green-400 */
+    --metric-green-end:   #10b981; /* green-500 */
+    --metric-blue-start:  #93c5fd; /* blue-300 */
+    --metric-blue-end:    #3b82f6; /* blue-500 */
+    --metric-purple-start:#a78bfa; /* purple-300 */
+    --metric-purple-end:  #6d28d9; /* purple-700 */
+    --metric-orange-start:#fca5a5; /* warm tint (adjust) */
+    --metric-orange-end:  #f97316; /* orange-500 */
+
+    --metric-card-border: rgba(0,0,0,0.04);
+    --metric-card-shadow: 0 8px 26px rgba(16,24,40,0.08);
+
+    /* Buttons */
+    --btn-radius: 10px;
+    --btn-padding: 10px 14px;
+    --btn-font-weight: 700;
+
+    /* Modal */
+    --modal-bg: rgba(0,0,0,0.45);
+    --modal-panel-bg: #ffffff;
+    --modal-radius: 14px;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --primary: 150 100% 36%;
+    --primary-foreground: 0 0% 100%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --metric-card-shadow: 0 8px 26px rgba(2,6,23,0.6);
+  }
+
+  html, body {
+    @apply bg-[color:var(--background)] text-[color:var(--foreground)];
+    height: 100%;
+    width: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* === Custom Task Table Styling for Modern Flat App Look ==== */
+@layer components {
+  /* Table container and scroll */
+  .task-table-container {
+    background-color: #fff;
+    border-radius: 12px;
+    border: 1px solid #e6e8ec;
+    overflow-x: auto;
+    box-shadow: 0 2px 18px rgba(0,0,0,0.05);
+  }
+
+  /* Table layout */
+  .task-table {
+    width: 100%;
+    min-width: 1200px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    font-size: 14px;
+    background-color: #fff;
+  }
+
+  /* Table header */
+  .task-table thead tr {
+    background: #f8fafc;
+    height: 44px;
+    border-radius: 12px 12px 0 0;
+  }
+  .task-table th {
+    font-weight: 700;
+    color: #495057;
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e6ea;
+    text-align: left;
+    padding: 12px 10px;
+    letter-spacing: 0.01em;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    user-select: none;
+    font-size: 13.8px;
+    white-space: nowrap;
+  }
+
+  /* Table row */
+  .task-table tbody tr {
+    border-bottom: 1.5px solid #f2f3f7;
+    transition: background 0.18s;
+    background-color: #fff;
+    height: 42px;
+  }
+  .task-table tbody tr:last-child {
+    border-bottom: none;
+  }
+  .task-table tbody tr:hover {
+    background: #f7f9fa;
+  }
+  /* Selected/revision row highlight */
+  .task-table tbody tr.bg-yellow-50 {
+    background: #fffbe9;
+  }
+
+  /* Table cell */
+  .task-table td {
+    padding: 10px 10px;
+    vertical-align: middle;
+    font-size: 1rem;
+    color: #23272f;
+    height: 42px;
+    font-weight: 400;
+    background: transparent;
+    white-space: nowrap;
+  }
+
+  .task-table .font-medium {
+    font-weight: 600 !important;
+    color: #334155;
+    letter-spacing: 0.005em;
+  }
+  .task-table .max-w-xs {
+    max-width: 210px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Checkbox column */
+  .task-table th.w-12,
+  .task-table td.w-12,
+  .task-table th.w-1,
+  .task-table td.w-1 {
+    width: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  /* Bar column */
+  .task-table td.p-0 {
+    padding: 0 !important;
+  }
+  .task-table .h-full.w-1 {
+    min-height: 42px;
+    max-height: 42px;
+    border-radius: 8px 0 0 8px;
+    margin-right: 0;
+  }
+
+  /* Action column */
+  .task-table th:last-child,
+  .task-table td:last-child {
+    min-width: 120px;
+    width: 120px;
+    padding-right: 12px;
+    text-align: right;
+  }
+  .task-table td .flex.items-center.gap-1 > * {
+    margin: 0 2.5px;
+  }
+
+  /* Status badge */
+  .task-table .inline-flex.bg-yellow-100 {
+    background: #fff2cc !important;
+    color: #ad8d2a !important;
+    border-radius: 12px;
+    font-size: 13px !important;
+    font-weight: 500;
+    min-width: 64px;
+    text-align: center;
+  }
+  /* For all normal badges */
+  .task-table .inline-flex.items-center {
+    font-size: 13px !important;
+    border-radius: 12px;
+    font-weight: 500;
+    padding: 2px 12px;
+    margin: 0 2px;
+    letter-spacing: 0.01em;
+  }
+  /* Priority colors—adjust shade for better vibrancy */
+  .task-table .inline-flex.bg-red-700 { background: #e74c3c !important; color: #fff !important; }
+  .task-table .inline-flex.bg-rose-500 { background: #ff9b52 !important; color: #fff !important; }
+  .task-table .inline-flex.bg-yellow-500 { background: #ffcd39 !important; color: #fff !important; }
+  .task-table .inline-flex.bg-green-600 { background: #2bc280 !important; color: #fff !important; }
+
+  /* Category tags */
+  .task-table .inline-flex.bg-blue-50 {
+    background: #e9f0ff !important;
+    color: #536bdf !important;
+    border-radius: 13px;
+    border: 1px solid #e7eeff;
+    padding: 1.5px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: box-shadow 0.18s;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+  }
+  .task-table button.text-left.ring-2 {
+    background: #eaf4ff !important;
+    border: 1px solid #b1cfff !important;
+    color: #3254c5 !important;
+    box-shadow: 0 0 0 2px #a6d2ff !important;
+  }
+  .task-table .inline-flex.bg-blue-50:active,
+  .task-table .inline-flex.bg-blue-50:focus {
+    background: #eaf4ff !important;
+    border: 1.5px solid #b1cfff !important;
+    color: #3254c5 !important;
+  }
+
+  /* Table head font (bold) */
+  .task-table th {
+    font-weight: 700;
+    text-transform: none;
+    font-size: 14.1px;
+    background: #f5f7fa !important;
+    letter-spacing: 0.01em;
+  }
+
+  /* Custom action (edit, view, delete) icon buttons */
+  .task-table .btn-action {
+    background: #39c0fd;
+    color: #fff !important;
+    border-radius: 7px !important;
+    padding: 5px 7px !important;
+    box-shadow: 0 2px 8px rgba(57,192,253,0.10);
+    border: none !important;
+    line-height: 1.15;
+    font-size: 15.5px;
+    transition: background 0.13s, box-shadow 0.16s;
+    outline: none;
+    margin: 0 2px;
+  }
+  .task-table .btn-action[title="Delete"] {
+    background: #e95c76;
+    color: #fff;
+  }
+  .task-table .btn-action:hover { background: #0aafee; }
+  .task-table .btn-action[title="Delete"]:hover { background: #c82341; }
+
+  .task-table .lucide-react {
+    vertical-align: middle;
+  }
+
+  /* Attachment column blue link */
+  .task-table .text-blue-600 {
+    color: #1a9eff !important;
+    text-underline-offset: 2px;
+    font-weight: 600;
+    font-size: 13.8px;
+    cursor: pointer;
+  }
+  .task-table .text-gray-500 {
+    color: #8b95aa !important;
+    font-style: italic;
+  }
+  .task-table a.text-blue-600 {
+    text-decoration: underline;
+  }
+
+  /* Table numbers: left-justify, purple, and bold for Task ID */
+  .task-table .font-medium span {
+    color: #625cfc;
+    font-weight: 700;
+    font-size: 15.5px;
+    letter-spacing: 0.01em;
+    background: transparent !important;
+  }
+
+  /* Red deadline dot */
+  .task-table .text-red-600 {
+    color: #f44e4e !important;
+  }
+
+  /* Sub-text date/label below */
+  .task-table .text-xs {
+    font-size: 12.5px !important;
+    color: #b5b5b5 !important;
+    font-weight: 500;
+    margin-top: 1px;
+    letter-spacing: 0.01em;
+  }
+
+  /* Attachment round bg if icon as in pic */
+  .task-table .attachment-icon-bg {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f4faff;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    border: 1.5px solid #d6eaff;
+  }
+
+  /* Pagination (if visible) */
+  .task-table-pagination {
+    margin-top: 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 10px 6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    font-family: 'Inter', Arial, sans-serif;
+  }
+  .task-table-pagination button {
+    border-radius: 8px !important;
+    background: none;
+    font-weight: 700;
+    color: #5458a3;
+    border: 1px solid #d1d8ec !important;
+    min-width: 36px;
+    font-size: 14px;
+    transition: background 0.14s;
+  }
+  .task-table-pagination button:hover {
+    background: #e7ebfd;
+    color: #1a2e59;
+  }
+  .task-table-pagination span {
+    margin: 0 7px;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 900px) {
+    .task-table { min-width: 720px; font-size: 13.4px;}
+    .task-table th, .task-table td { padding: 7px 3px; }
+    .task-table .font-medium span { font-size: 14px; }
+    .task-table th, .task-table td { font-size: 13px; }
+  }
+  @media (max-width: 700px) {
+    .task-table { min-width: 620px; }
+    .task-table th, .task-table td { padding: 5px 2px; font-size: 12.2px;}
+  }
+}
+
+/* ==== END TaskTable Modern Look CSS ==== */
+
+/* Sidebar, login and common styles (unchanged) */
+@layer components {
+  .sidebar {
+    background-color: var(--primary-hex);
+    color: hsl(var(--primary-foreground) / 1);
+  }
+  .sidebar-hsl {
+    background-color: hsl(var(--primary) / 1);
+    color: hsl(var(--primary-foreground) / 1);
+  }
+  .sidebar-logo-box {
+    background-color: rgba(255,255,255,0.08);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .login-page {
+    background-color: hsl(var(--background) / 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 95vh;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  .login-container {
+    background-color: hsl(var(--card) / 1);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .login-container h2 {
+    color: hsl(var(--primary) / 1);
+    margin-bottom: 25px;
+    font-weight: 700;
+  }
+
+  .form-control {
+    border-radius: 8px;
+    padding: 12px 15px;
+    border: 1px solid hsl(var(--border) / 1);
+    width: 100%;
+    margin-bottom: 15px;
+    font-size: 16px;
+  }
+
+  .form-control:focus {
+    border-color: hsl(var(--primary) / 1);
+    box-shadow: 0 0 0 0.25rem rgba(0, 122, 61, 0.18);
+    outline: none;
+  }
+
+  .btn-primary {
+    background-color: hsl(var(--primary) / 1);
+    border-color: hsl(var(--primary) / 1);
+    padding: var(--btn-padding);
+    border-radius: var(--btn-radius);
+    font-weight: var(--btn-font-weight);
+    transition: background-color 0.3s ease, transform 0.12s ease;
+    color: hsl(var(--primary-foreground) / 1);
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    min-height: 40px;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(0.98);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid rgba(0,0,0,0.06);
+    color: inherit;
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+
+  .btn-secondary {
+    background: #f3f4f6;
+    color: #1f2937;
+    border-radius: 8px;
+    padding: 8px 12px;
+    border: 1px solid #e6e8ec;
+  }
+
+  .metric-card {
+    border-radius: 10px;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    min-height: 64px;
+    transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+    color: #ffffff;
+    box-shadow: var(--metric-card-shadow);
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .metric-card:focus,
+  .metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(16,24,40,0.12);
+  }
+  .metric-card .title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.95;
+    text-align: center;
+  }
+  .metric-card .value {
+    font-size: 1.375rem;
+    font-weight: 800;
+    line-height: 1;
+    text-align: center;
+  }
+  .metric-card .note {
+    font-size: 0.75rem;
+    opacity: 0.95;
+    text-align: center;
+  }
+  .metric-completion { background-image: linear-gradient(90deg, var(--metric-green-start), var(--metric-green-end)); }
+  .metric-avgdelay { background-image: linear-gradient(90deg, var(--metric-blue-start), var(--metric-blue-end)); }
+  .metric-completed { background-image: linear-gradient(90deg, #4caf50, #226644); }
+  .metric-pending { background-image: linear-gradient(90deg, var(--metric-orange-start), var(--metric-orange-end)); }
+  .metric-completion .title,
+  .metric-completion .value,
+  .metric-completion .note,
+  .metric-avgdelay .title,
+  .metric-avgdelay .value,
+  .metric-avgdelay .note,
+  .metric-completed .title,
+  .metric-completed .value,
+  .metric-completed .note,
+  .metric-pending .title,
+  .metric-pending .value,
+  .metric-pending .note {
+    color: #ffffff;
+  }
+
+  @media (max-width: 640px) {
+    .metric-card { padding: 12px; min-height: 56px; }
+    .metric-card .value { font-size: 1.125rem; }
+    .metric-card .title { font-size: 0.8rem; }
+  }
+}
+
+/* =========== New UI Controls & Modal Styling =========== */
+@layer components {
+  /* Create Transfer Button (green) */
+  .btn-transfer {
+    background: linear-gradient(90deg, var(--primary-hex) 0%, #0b7a3a 100%);
+    color: #fff;
+    border: none;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(7,122,61,0.12);
+    transition: transform 120ms ease, box-shadow 160ms ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-transfer:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(7,122,61,0.14); }
+
+  /* Intervention Button (red) */
+  .btn-intervention {
+    background: linear-gradient(90deg, #e03b3b 0%, #c82323 100%);
+    color: #fff;
+    border: none;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(224,59,59,0.12);
+    transition: transform 120ms ease, box-shadow 160ms ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-intervention:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(200,35,35,0.14); }
+
+  /* Inline uploader controls (Upload & Clear) */
+  .uploader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .uploader input[type="file"] {
+    border-radius: 8px;
+    padding: 6px 8px;
+    border: 1px solid rgba(0,0,0,0.06);
+    background: #fff;
+  }
+  .btn-upload {
+    background: linear-gradient(90deg, #2563eb, #1f6fe0);
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(37,99,235,0.12);
+  }
+  .btn-upload:hover { transform: translateY(-2px); }
+
+  .btn-clear {
+    background: transparent;
+    border: 1px solid #e6e8ec;
+    color: #374151;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  /* Full-screen modal wrapper for "Create Transfer" and "Intervention" - looks like PHP modal but modern */
+  .modal-fullscreen-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--modal-bg);
+    padding: 20px;
+  }
+  .modal-panel {
+    width: 100%;
+    max-width: 980px;
+    height: calc(100vh - 80px);
+    background: var(--modal-panel-bg);
+    border-radius: var(--modal-radius);
+    box-shadow: 0 18px 60px rgba(2,6,23,0.35);
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid #eef2f6;
+    background: linear-gradient(90deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+  }
+  .modal-body {
+    padding: 18px 22px;
+    flex: 1 1 auto;
+  }
+  .modal-footer {
+    padding: 14px 22px;
+    border-top: 1px solid #eef2f6;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0px;
+  }
+  .modal-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .modal-subtitle {
+    color: #6b7280;
+    font-size: 0.95rem;
+  }
+
+  /* Transfer modal specifics */
+  .transfer-header {
+    background: linear-gradient(90deg, rgba(0,122,61,0.06), rgba(0,122,61,0.03));
+    color: var(--primary-hex);
+  }
+  .transfer-from-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fbfefb;
+    border: 1px solid rgba(7,122,61,0.06);
+    color: #064e2a;
+    font-weight: 600;
+  }
+  .transfer-hidden-field {
+    display: none;
+  }
+
+  /* Intervention modal specifics */
+  .intervention-header {
+    background: linear-gradient(90deg, rgba(224,59,59,0.06), rgba(224,59,59,0.03));
+    color: #b91c1c;
+  }
+
+  /* Attachments modal styles (full engaged look) */
+  .attachments-panel {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .attachments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .attachment-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid #eef2f6;
+  }
+  .attachment-item a,
+  .attachment-item button {
+    color: #0b66ff;
+    text-decoration: underline;
+    font-weight: 600;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Small helpers */
+  .muted { color: #8b95aa; font-size: 0.9rem; }
+  .text-danger { color: #dc2626; }
+  .text-success { color: #16a34a; }
+
+  /* Responsive modal adjustments */
+  @media (max-width: 1024px) {
+    .modal-panel { max-width: 92%; height: calc(100vh - 40px); border-radius: 12px; }
+  }
+  @media (max-width: 640px) {
+    .modal-panel { width: 100%; height: 100vh; border-radius: 0; padding-bottom: 28px; }
+    .modal-header, .modal-footer { padding: 12px; }
+  }
+}
+
+/* Revision Warning Component Styles */
+@layer components {
+  .revision-warning-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+  }
+
+  .revision-warning-triangle {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 16px solid #f59e0b;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .revision-warning-blink {
+    width: 4px;
+    height: 4px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    animation: revision-blink 1.5s infinite;
+  }
+
+  @keyframes revision-blink {
+    0%, 50% {
+      opacity: 1;
+    }
+    51%, 100% {
+      opacity: 0;
+    }
+  }
+}
+
+/* Accessibility focus outlines */
+@layer utilities {
+  .focus-ring:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
+    border-radius: 8px;
+  }
+}
+
+/* Keep existing utility classes intact for other components */
+@layer components {
+  .profile-picture-container {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .profile-picture-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .profile-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 14px;
+    height: 14px;
+    background-color: #4ade80;
+    border-radius: 50%;
+    border: 2px solid white;
+    transform: translate(25%, 25%);
+    z-index: 10;
+  }
+}
+
+/* End of globals.css - connected to app through import in _app or root layout */

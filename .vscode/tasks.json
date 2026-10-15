@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "CMT Frontend Dev Server",
+			"type": "shell",
+			"command": "cd CMT.Frontend && npm run dev",
+			"isBackground": true,
+			"problemMatcher": [
+				{
+					"base": "$tsc-watch",
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "^.*Next\\.js",
+						"endsPattern": "Ready in [0-9.]+s"
+					}
+				}
+			],
+			"group": "build"
+		}
+	]
+}

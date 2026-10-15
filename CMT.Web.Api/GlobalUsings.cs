@@ -1,0 +1,10 @@
+global using System;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Threading.Tasks;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.Extensions.Logging;
+global using CMT.Domain.Models;
+global using CMT.Application.Services;
+global using CMT.Application.Common;
+global using CMT.Application.DTOs;

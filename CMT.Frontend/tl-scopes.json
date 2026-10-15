@@ -1,0 +1,25 @@
+{
+  "scopes": {
+    "116": {
+      "teamLeaderId": 116,
+      "allowedUserIds": [
+        112,
+        117,
+        118,
+        111,
+        135,
+        114,
+        134,
+        133,
+        132,
+        131,
+        136,
+        124,
+        137
+      ],
+      "label": "Scope for sacasx",
+      "updatedBy": 2,
+      "updatedAt": "2026-03-26T06:26:50.096Z"
+    }
+  }
+}

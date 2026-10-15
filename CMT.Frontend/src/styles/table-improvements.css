@@ -1,0 +1,875 @@
+/* Table Improvements for CMT Task Management */
+
+/* ============================================== */
+/* TOP HORIZONTAL SCROLLBAR (synced with bottom)  */
+/* Works for both .task-table-container and        */
+/* .completed-task-table-container                 */
+/* ============================================== */
+
+/* Wrapper that holds the top scrollbar + table container */
+.table-scroll-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Top scrollbar: a div that only shows a horizontal scrollbar.
+   IMPORTANT: The element MUST have a fixed non-zero height so the browser
+   renders the horizontal scrollbar. Using `overflow-x: scroll` (not auto)
+   guarantees the scrollbar is always visible, mirroring the bottom scrollbar. */
+.top-horizontal-scrollbar {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  width: 100%;
+  height: 14px;           /* Fixed height — required for scrollbar to render */
+  min-height: 14px;
+  margin-bottom: 4px;
+  background: transparent;
+  border-radius: 6px;
+  position: relative;
+}
+
+/* The inner div inside the top scrollbar — its width is set via JavaScript
+   to match the table's full scrollWidth so the scrollbar thumb can move
+   across the entire horizontal content range. The inner element must have
+   a positive height so the browser properly lays out the scrollable content,
+   but should NOT block pointer events on the scrollbar track. */
+.top-horizontal-scrollbar-inner {
+  height: 1px;
+  width: 1px;             /* Placeholder; overridden by JS to match table scrollWidth */
+  display: block;
+}
+
+/* Style the top scrollbar to match the bottom one (WebKit browsers) */
+.top-horizontal-scrollbar::-webkit-scrollbar {
+  height: 12px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.top-horizontal-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 6px;
+}
+
+.top-horizontal-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 6px;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.top-horizontal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Firefox support for top scrollbar */
+.top-horizontal-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+/* Base table container with horizontal scroll */
+.task-table-container {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: visible;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth scrollbar styling */
+.task-table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.task-table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.task-table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.task-table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Table base styles */
+.task-table {
+  width: 100%;
+  min-width: 1400px;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+/* Column width definitions - Fixed widths for better control */
+.task-table thead th:nth-child(1) { width: 4px; }    /* Color bar */
+.task-table thead th:nth-child(2) { width: 50px; }   /* Checkbox */
+.task-table thead th:nth-child(3) { width: 100px; }  /* Task ID */
+.task-table thead th:nth-child(4) { width: 140px; }  /* Part Number */
+.task-table thead th:nth-child(5) { width: 250px; }  /* Description */
+.task-table thead th:nth-child(6) { width: 130px; }  /* Category */
+.task-table thead th:nth-child(7) { width: 150px; }  /* Status */
+.task-table thead th:nth-child(8) { width: 150px; }  /* Assigned Engineer */
+.task-table thead th:nth-child(9) { width: 120px; }  /* Priority */
+.task-table thead th:nth-child(10) { width: 130px; } /* Created By */
+.task-table thead th:nth-child(11) { width: 130px; } /* Target Date */
+.task-table thead th:nth-child(12) { width: 130px; } /* Created At */
+.task-table thead th:nth-child(13) { width: 120px; } /* Attachment */
+.task-table thead th:nth-child(14) { width: 180px; } /* Alerts */
+.task-table thead th:nth-child(15) { width: 150px; } /* Action */
+
+/* Apply same widths to table cells */
+.task-table tbody td:nth-child(1) { width: 4px; }
+.task-table tbody td:nth-child(2) { width: 50px; }
+.task-table tbody td:nth-child(3) { width: 100px; }
+.task-table tbody td:nth-child(4) { width: 140px; }
+.task-table tbody td:nth-child(5) { width: 250px; }
+.task-table tbody td:nth-child(6) { width: 130px; }
+.task-table tbody td:nth-child(7) { width: 150px; }
+.task-table tbody td:nth-child(8) { width: 150px; }
+.task-table tbody td:nth-child(9) { width: 120px; }
+.task-table tbody td:nth-child(10) { width: 130px; }
+.task-table tbody td:nth-child(11) { width: 130px; }
+.task-table tbody td:nth-child(12) { width: 130px; }
+.task-table tbody td:nth-child(13) { width: 120px; }
+.task-table tbody td:nth-child(14) { width: 180px; }
+.task-table tbody td:nth-child(15) { width: 150px; }
+
+/* Expandable row on hover */
+.task-table tbody tr {
+  transition: all 0.2s ease-in-out;
+  position: relative;
+}
+
+.task-table tbody tr:hover {
+  background-color: #f8fafc !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transform: scale(1.01);
+  z-index: 10;
+}
+
+/* Expand description column on row hover */
+.task-table tbody tr:hover td:nth-child(5) {
+  width: 350px;
+  max-width: none;
+}
+
+.task-table tbody tr:hover td:nth-child(5) > div {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  max-width: none;
+}
+
+/* Table header styles */
+.task-table thead th {
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #475569;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+/* Table cell styles */
+.task-table tbody td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.875rem;
+  color: #334155;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Truncated text with tooltip */
+.truncate-with-tooltip {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: help;
+  position: relative;
+}
+
+.truncate-with-tooltip:hover::after {
+  content: attr(data-full-text);
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: #1e293b;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  white-space: normal;
+  max-width: 400px;
+  z-index: 1000;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-top: 4px;
+  word-wrap: break-word;
+}
+
+/* Notification table improvements */
+.notification-table-container {
+  position: relative;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.notification-table-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notification-table-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.notification-table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.notification-table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Notification row hover effect */
+.notification-row {
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+.notification-row:hover {
+  background-color: #f1f5f9 !important;
+  transform: translateX(4px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1536px) {
+  .task-table {
+    min-width: 1200px;
+  }
+  
+  .task-table thead th:nth-child(5),
+  .task-table tbody td:nth-child(5) {
+    width: 200px;
+  }
+}
+
+@media (max-width: 1280px) {
+  .task-table {
+    min-width: 1000px;
+  }
+  
+  .task-table thead th:nth-child(5),
+  .task-table tbody td:nth-child(5) {
+    width: 180px;
+  }
+  
+  .task-table thead th:nth-child(7),
+  .task-table tbody td:nth-child(7),
+  .task-table thead th:nth-child(8),
+  .task-table tbody td:nth-child(8) {
+    width: 130px;
+  }
+}
+
+/* Sticky action column */
+.task-table thead th:last-child,
+.task-table tbody td:last-child {
+  position: sticky;
+  right: 0;
+  background-color: white;
+  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.05);
+  z-index: 5;
+}
+
+.task-table thead th:last-child {
+  z-index: 25;
+  background-color: #f8fafc;
+}
+
+.task-table tbody tr:hover td:last-child {
+  background-color: #f8fafc;
+}
+
+/* Pagination styles */
+.task-table-pagination {
+  padding: 16px;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Badge and button improvements */
+.task-table .inline-flex {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+}
+
+.task-table .inline-flex:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth transitions for all interactive elements */
+.task-table button,
+.task-table a {
+  transition: all 0.15s ease-in-out;
+}
+
+.task-table button:hover,
+.task-table a:hover {
+  transform: scale(1.05);
+}
+
+/* Loading state */
+.task-table-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* Empty state */
+.task-table-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: #64748b;
+}
+
+/* Sidebar table adjustments */
+.sidebar-table-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 6px;
+}
+
+.sidebar-table-container .task-table {
+  min-width: 100%;
+  font-size: 0.8125rem;
+}
+
+.sidebar-table-container .task-table thead th,
+.sidebar-table-container .task-table tbody td {
+  padding: 8px 6px;
+}
+
+/* ==== New additions for vertical scrollbar, selected-row indicator, and scroll indicator ==== */
+
+/* Make the table container vertically scrollable and limit height so the vertical scrollbar appears on large tables */
+.task-table-container {
+  /* only adding/augmenting these properties; other properties above remain preserved */
+  max-height: calc(100vh - 320px); /* adjust as needed */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Custom vertical scrollbar for WebKit browsers */
+.task-table-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.task-table-container::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, rgba(245,247,250,0), rgba(245,247,250,0.6));
+  border-radius: 10px;
+  margin: 6px 0;
+}
+
+.task-table-container::-webkit-scrollbar-thumb {
+  background: rgba(99,102,241,0.18);
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.6);
+  transition: background-color 140ms ease;
+}
+
+.task-table-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(99,102,241,0.28);
+}
+
+/* Firefox scrollbar support */
+.task-table-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99,102,241,0.18) transparent;
+}
+
+/* Selected row visual indicator */
+.task-table tbody tr.row-selected {
+  background-color: #dbeafe !important; /* light blue */
+  border-left: 4px solid #3b82f6;
+  transition: background-color 0.12s ease, box-shadow 0.12s ease;
+  z-index: 12;
+}
+
+/* Make hover state for selected rows slightly different to remain distinguishable */
+.task-table tbody tr.row-selected:hover {
+  background-color: #bfdbfe !important;
+  transform: none; /* do not scale the selected row on hover */
+  box-shadow: 0 6px 12px rgba(59,130,246,0.06);
+}
+
+/* Checkbox cell visual when row is selected */
+.task-table tbody tr.row-selected td:nth-child(2) {
+  background-color: rgba(59,130,246,0.06);
+}
+
+/* Ensure sticky action column remains visible & consistent when a row is selected */
+.task-table tbody tr.row-selected td:last-child,
+.task-table tbody tr.row-selected th:last-child {
+  background-color: #dbeafe;
+}
+
+/* optional helper class for checkbox cell (if you prefer explicit class) */
+.checkbox-cell-selected {
+  background-color: rgba(59,130,246,0.06);
+}
+
+/* Scroll indicator: gradient fade at the bottom to hint that more content exists.
+   This is shown when the container has the "has-scroll" class and not when scrolled to bottom.
+   (A small script toggles has-scroll / scrolled-bottom in the component.) */
+.task-table-container::after {
+  content: '';
+  display: none;
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 60%, rgba(255,255,255,1) 100%);
+  z-index: 30;
+  transition: opacity 160ms ease;
+}
+
+/* show when the container is scrollable and not at bottom */
+.task-table-container.has-scroll:not(.scrolled-bottom)::after {
+  display: block;
+  opacity: 1;
+}
+
+/* subtle shadow when not scrolled to bottom */
+.task-table-container.has-scroll::before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 12px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0));
+  z-index: 25;
+}
+
+/* Smooth transitions for changes in selection/scroll interactions */
+.task-table tbody tr,
+.task-table-container {
+  transition: background-color 110ms ease, box-shadow 110ms ease, transform 110ms ease;
+}
+
+/* end of task-table additions */
+
+
+/* ============================================== */
+/* COMPLETED TASK TABLE STYLES                    */
+/* Same scrollbar and sticky action column as     */
+/* the main task table                            */
+/* ============================================== */
+
+/* Completed task table container with both horizontal and vertical scroll */
+.completed-task-table-container {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  max-height: calc(100vh - 320px);
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Horizontal scrollbar styling for completed task table */
+.completed-task-table-container::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.completed-task-table-container::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, rgba(245,247,250,0), rgba(245,247,250,0.6));
+  border-radius: 10px;
+  margin: 6px;
+}
+
+.completed-task-table-container::-webkit-scrollbar-thumb {
+  background: rgba(99,102,241,0.18);
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.6);
+  transition: background-color 140ms ease;
+}
+
+.completed-task-table-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(99,102,241,0.28);
+}
+
+/* Firefox scrollbar support for completed task table */
+.completed-task-table-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99,102,241,0.18) transparent;
+}
+
+/* Top scrollbar specific styling for completed task table wrapper */
+.completed-table-scroll-wrapper .top-horizontal-scrollbar::-webkit-scrollbar {
+  height: 12px;
+}
+
+.completed-table-scroll-wrapper .top-horizontal-scrollbar::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, rgba(245,247,250,0), rgba(245,247,250,0.6));
+  border-radius: 10px;
+}
+
+.completed-table-scroll-wrapper .top-horizontal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(99,102,241,0.18);
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.6);
+}
+
+.completed-table-scroll-wrapper .top-horizontal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(99,102,241,0.28);
+}
+
+.completed-table-scroll-wrapper .top-horizontal-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99,102,241,0.18) transparent;
+}
+
+/* Completed task table base styles */
+.completed-task-table {
+  width: 100%;
+  min-width: 1680px;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+/*
+ * Column width definitions for completed task table (12 columns total).
+ * Order matches the <TableHead> ordering in src/app/tasks/completed/page.tsx:
+ *   1. Task ID
+ *   2. Serial Number
+ *   3. Part Number
+ *   4. Description
+ *   5. PO Number
+ *   6. Category
+ *   7. Engineer
+ *   8. Comment
+ *   9. Actual Completion
+ *  10. Created By
+ *  11. Shop
+ *  12. Actions  (sticky)
+ */
+.completed-task-table thead th:nth-child(1)  { width: 120px; }  /* Task ID */
+.completed-task-table thead th:nth-child(2)  { width: 140px; }  /* Serial Number */
+.completed-task-table thead th:nth-child(3)  { width: 140px; }  /* Part Number */
+.completed-task-table thead th:nth-child(4)  { width: 240px; }  /* Description */
+.completed-task-table thead th:nth-child(5)  { width: 130px; }  /* PO Number */
+.completed-task-table thead th:nth-child(6)  { width: 130px; }  /* Category */
+.completed-task-table thead th:nth-child(7)  { width: 150px; }  /* Engineer */
+.completed-task-table thead th:nth-child(8)  { width: 220px; }  /* Comment */
+.completed-task-table thead th:nth-child(9)  { width: 150px; }  /* Actual Completion */
+.completed-task-table thead th:nth-child(10) { width: 130px; }  /* Created By */
+.completed-task-table thead th:nth-child(11) { width: 120px; }  /* Shop */
+.completed-task-table thead th:nth-child(12) { width: 280px; }  /* Actions - sticky */
+
+/* Apply same widths to table cells */
+.completed-task-table tbody td:nth-child(1)  { width: 120px; }
+.completed-task-table tbody td:nth-child(2)  { width: 140px; }
+.completed-task-table tbody td:nth-child(3)  { width: 140px; }
+.completed-task-table tbody td:nth-child(4)  { width: 240px; }
+.completed-task-table tbody td:nth-child(5)  { width: 130px; }
+.completed-task-table tbody td:nth-child(6)  { width: 130px; }
+.completed-task-table tbody td:nth-child(7)  { width: 150px; }
+.completed-task-table tbody td:nth-child(8)  { width: 220px; }
+.completed-task-table tbody td:nth-child(9)  { width: 150px; }
+.completed-task-table tbody td:nth-child(10) { width: 130px; }
+.completed-task-table tbody td:nth-child(11) { width: 120px; }
+.completed-task-table tbody td:nth-child(12) { width: 280px; }
+
+/* Completed task table header styles */
+.completed-task-table thead th {
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #475569;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+/* Completed task table cell styles */
+.completed-task-table tbody td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.875rem;
+  color: #334155;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Completed task table row hover */
+.completed-task-table tbody tr {
+  transition: all 0.2s ease-in-out;
+  position: relative;
+}
+
+.completed-task-table tbody tr:hover {
+  background-color: #f8fafc !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * STICKY ACTION COLUMN for completed task table
+ * Mirrors the behavior of .task-table — the last column stays
+ * pinned to the right edge during horizontal scrolling so the
+ * Action buttons remain accessible on any viewport width.
+ * ─────────────────────────────────────────────────────────── */
+.completed-task-table thead th:last-child,
+.completed-task-table tbody td:last-child,
+.completed-task-table .sticky-action-column {
+  position: sticky;
+  right: 0;
+  background-color: #ffffff;
+  box-shadow: -4px 0 8px rgba(0, 0, 0, 0.08);
+  z-index: 5;
+  /* Allow the sticky column to shrink responsively on small screens
+     while still being wide enough for the action buttons. */
+  min-width: 220px;
+  max-width: 320px;
+}
+
+/* Header cell of the sticky action column */
+.completed-task-table thead th:last-child,
+.completed-task-table thead .sticky-action-column {
+  z-index: 25;
+  background-color: #f8fafc;
+}
+
+/* Preserve sticky background on row hover */
+.completed-task-table tbody tr:hover td:last-child,
+.completed-task-table tbody tr:hover .sticky-action-column {
+  background-color: #f8fafc;
+}
+
+/* Clip content inside the sticky column so overflow never leaks
+   outside the fixed column width (prevents horizontal layout jumps). */
+.completed-task-table .sticky-action-column {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Allow the action button group inside the sticky cell to wrap
+   nicely on narrower viewports without breaking the sticky layout. */
+.completed-task-table tbody td.sticky-action-column > div {
+  white-space: normal;
+  min-width: 0;
+}
+
+/* Scroll indicator for completed task table */
+.completed-task-table-container::after {
+  content: '';
+  display: none;
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 60%, rgba(255,255,255,1) 100%);
+  z-index: 30;
+  transition: opacity 160ms ease;
+}
+
+.completed-task-table-container.has-scroll:not(.scrolled-bottom)::after {
+  display: block;
+  opacity: 1;
+}
+
+.completed-task-table-container.has-scroll::before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 12px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.03), rgba(0,0,0,0));
+  z-index: 25;
+}
+
+/* ─────────────────────────────────────────────────────────────
+ * Responsive adjustments for the completed task table.
+ * Column indices reflect the 12-column layout (Description = 4,
+ * Comment = 8, Actions = 12).
+ * ─────────────────────────────────────────────────────────── */
+@media (max-width: 1536px) {
+  .completed-task-table {
+    min-width: 1500px;
+  }
+
+  .completed-task-table thead th:nth-child(4),
+  .completed-task-table tbody td:nth-child(4) {
+    width: 200px;  /* Description */
+  }
+
+  .completed-task-table thead th:nth-child(8),
+  .completed-task-table tbody td:nth-child(8) {
+    width: 190px;  /* Comment */
+  }
+}
+
+@media (max-width: 1280px) {
+  .completed-task-table {
+    min-width: 1320px;
+  }
+
+  .completed-task-table thead th:nth-child(4),
+  .completed-task-table tbody td:nth-child(4) {
+    width: 180px;  /* Description */
+  }
+
+  .completed-task-table thead th:nth-child(8),
+  .completed-task-table tbody td:nth-child(8) {
+    width: 170px;  /* Comment */
+  }
+
+  .completed-task-table thead th:nth-child(12),
+  .completed-task-table tbody td:nth-child(12),
+  .completed-task-table .sticky-action-column {
+    width: 240px;
+    min-width: 200px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .completed-task-table {
+    min-width: 1200px;
+  }
+
+  .completed-task-table thead th:nth-child(4),
+  .completed-task-table tbody td:nth-child(4) {
+    width: 160px;  /* Description */
+  }
+
+  .completed-task-table thead th:nth-child(8),
+  .completed-task-table tbody td:nth-child(8) {
+    width: 160px;  /* Comment */
+  }
+
+  .completed-task-table thead th:nth-child(12),
+  .completed-task-table tbody td:nth-child(12),
+  .completed-task-table .sticky-action-column {
+    width: 220px;
+    min-width: 180px;
+    max-width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .completed-task-table {
+    min-width: 1080px;
+  }
+
+  .completed-task-table thead th:nth-child(12),
+  .completed-task-table tbody td:nth-child(12),
+  .completed-task-table .sticky-action-column {
+    width: 180px;
+    min-width: 160px;
+    max-width: 200px;
+  }
+
+  /* Slightly reduce sticky column shadow on mobile so it feels lighter */
+  .completed-task-table thead th:last-child,
+  .completed-task-table tbody td:last-child,
+  .completed-task-table .sticky-action-column {
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* Badge and button improvements for completed task table */
+.completed-task-table .inline-flex {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+}
+
+.completed-task-table .inline-flex:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Smooth transitions for all interactive elements in completed task table */
+.completed-task-table button,
+.completed-task-table a {
+  transition: all 0.15s ease-in-out;
+}
+
+.completed-task-table button:hover,
+.completed-task-table a:hover {
+  transform: scale(1.02);
+}
+
+/* Yellow highlight for revision alert rows in completed task table */
+.completed-task-table tbody tr.bg-yellow-50 {
+  background-color: #fffbe9 !important;
+}
+
+.completed-task-table tbody tr.bg-yellow-50 td:last-child,
+.completed-task-table tbody tr.bg-yellow-50 .sticky-action-column {
+  background-color: #fffbe9;
+}
+
+.completed-task-table tbody tr.bg-yellow-50:hover td:last-child,
+.completed-task-table tbody tr.bg-yellow-50:hover .sticky-action-column {
+  background-color: #fff8dc;
+}
+
+/* end of completed task table styles */
